@@ -5,7 +5,38 @@
 **a. Initial design**
 
 - Briefly describe your initial UML design.
+
+--> My initial UML design has three classes. The pet class is the parent class which is inherited by Tracking class and DailyPlan class. Since the owner wants to medicate the pet i am think of adding an enum class to identify what health condition the pet is in
+
 - What classes did you include, and what responsibilities did you assign to each?
+
+--> Enum class
+
+class heath:
+
+	sick =  1
+
+	heathy = 2
+
+--> Owner class:
+
+1. attributes: owner_name(str)
+2. methods: add_owner(), get_owner()
+
+--> Pet class:
+
+1. attributes: pet_name (str), health_condition (str)
+2. methods: add_pet, get_pet
+
+--> Tracking class
+
+1. attributes: _
+2. methods: schedule_walk, feed_pet, groom_pet, treat_pet
+
+--> DailyPlan class:
+
+1. attributes: _
+2. methods:
 
 **b. Design changes**
 

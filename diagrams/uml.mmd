@@ -1,15 +1,83 @@
 classDiagram
-    %% Replace the placeholders below with your actual classes, attributes, methods, and relationships.
-    %% Keep this file updated so it matches your final implementation.
-
-    class ClassName {
-        +type attribute
-        +method() returnType
+    class Owner {
+        -String ownerName
+        -int availableMinutes
+        -Dict preferences
+        +register()
+        +setAvailableMinutes(minutes: int)
+        +addPreference(key: String, value: String)
     }
 
-    class AnotherClass {
-        +type attribute
-        +method() returnType
+    class Pet {
+        -String petId
+        -String name
+        -String species
+        -HealthCondition healthCondition
+        +addTask(task: Task)
+        +removeTask(taskId: String)
+        +getTasks() List~Task~
     }
 
-    ClassName --> AnotherClass : relationship
+    class Task {
+        -String taskId
+        -String name
+        -TaskType taskType
+        -int durationMinutes
+        -Priority priority
+        -String preferredTime
+        -boolean recurring
+        +markDone()
+        +updatePriority(priority: Priority)
+    }
+
+    class Scheduler {
+        +generatePlan(pet: Pet, owner: Owner) DailyPlan
+        -sortByPriority(tasks: List~Task~) List~Task~
+        -fitsInTime(task: Task, remainingMinutes: int) boolean
+    }
+
+    class DailyPlan {
+        -String planId
+        -Date planDate
+        -List~Task~ scheduledTasks
+        -List~Task~ skippedTasks
+        -List~String~ reasoning
+        +addTask(task: Task, reason: String)
+        +skipTask(task: Task, reason: String)
+        +getTotalMinutes() int
+        +explain() String
+    }
+
+    class HealthCondition {
+        <<enumeration>>
+        HEALTHY
+        SICK
+        RECOVERING
+        SENIOR
+    }
+
+    class TaskType {
+        <<enumeration>>
+        WALK
+        FEEDING
+        MEDICATION
+        ENRICHMENT
+        GROOMING
+        OTHER
+    }
+
+    class Priority {
+        <<enumeration>>
+        LOW
+        MEDIUM
+        HIGH
+    }
+
+    Owner "1" --> "1..*" Pet : owns
+    Pet "1" --> "*" Task : has
+    Scheduler ..> DailyPlan : creates
+    Scheduler ..> Owner : reads constraints
+    DailyPlan "1" *-- "0..*" Task : includes
+    Pet ..> HealthCondition : uses
+    Task ..> TaskType : uses
+    Task ..> Priority : uses

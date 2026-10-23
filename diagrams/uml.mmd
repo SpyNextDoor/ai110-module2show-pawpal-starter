@@ -30,18 +30,15 @@ classDiagram
         +updatePriority(priority: Priority)
     }
 
-    class Scheduler {
-        +generatePlan(pet: Pet, owner: Owner) DailyPlan
-        -sortByPriority(tasks: List~Task~) List~Task~
-        -fitsInTime(task: Task, remainingMinutes: int) boolean
-    }
-
     class DailyPlan {
         -String planId
         -Date planDate
         -List~Task~ scheduledTasks
         -List~Task~ skippedTasks
         -List~String~ reasoning
+        +generate(pet: Pet, owner: Owner, tasks: List~Task~)
+        -sortByPriority(tasks: List~Task~) List~Task~
+        -fitsInTime(task: Task, remainingMinutes: int) boolean
         +addTask(task: Task, reason: String)
         +skipTask(task: Task, reason: String)
         +getTotalMinutes() int
@@ -75,8 +72,8 @@ classDiagram
 
     Owner "1" --> "1..*" Pet : owns
     Pet "1" --> "*" Task : has
-    Scheduler ..> DailyPlan : creates
-    Scheduler ..> Owner : reads constraints
+    DailyPlan ..> Owner : reads constraints
+    DailyPlan ..> Pet : plans for
     DailyPlan "1" *-- "0..*" Task : includes
     Pet ..> HealthCondition : uses
     Task ..> TaskType : uses

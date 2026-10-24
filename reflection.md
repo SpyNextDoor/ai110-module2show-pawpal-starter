@@ -43,6 +43,203 @@ class heath:
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
+--> after consulting with claude, I realized that there were so many functionalities my initial design didn't have. We did a heavy lifting in the task and daily plan classes since I had not thought about the constraints like time and priority. 
+
+**This is the new design:**
+
+Class Name: Owner
+
+1. Attributes:
+
+- ownerName: String
+- availableMinutes: Integer
+- preferences: Dictionary
+
+2. Methods:
+
+- register()
+- setAvailableMinutes(minutes: int)
+- addPreference(key: String, value: String)
+
+Class Name: Pet
+
+1. Attributes:
+
+- petId: String
+- name: String
+- species: String
+- healthCondition: HealthCondition
+
+2. Methods:
+
+- addTask(task: Task)
+- removeTask(taskId: String)
+- getTasks(): List<Task></task>
+
+Class Name: Task
+
+1. Attributes:
+
+- taskId: String
+- name: String
+- taskType: TaskType
+- durationMinutes: Integer
+- priority: Priority
+- preferredTime: String
+- recurring: Boolean
+
+2. Methods:
+
+- markDone()
+- updatePriority(priority: Priority)
+
+Class Name: DailyPlan
+
+1. Attributes:
+
+- planId: String
+- planDate: Date
+- scheduledTasks: List
+
+**Changes in the design:** 
+
+After asking claude to look through the skeleton for implementation we might have missed this is what we fixed:
+
+* `DailyPlan.__init__` now takes a `plan_id`, matching the diagram's attribute that the code had dropped.
+* `Owner` gained `pets: list[Pet]` plus `add_pet()` / `get_pets()` stubs — closes the missing owner↔pet relationship.
+* `Task` gained a `pet: Pet | None` back-reference, so a task can report which pet it belongs to without the pet being passed around separately.
+* `DailyPlan` now stores `pet` and `owner` as fields (set by `generate()`), instead of only ever seeing them as transient method parameters — `explain()` and `get_total_minutes()` can now know whose plan they're reporting on.
+* `DailyPlan.reasoning` changed from a flat `list[str]` to `dict[str, str]` keyed by `task_id`, so each reason is traceable to the task it belongs to instead of being order-dependent.
+* `DailyPlan.generate()` dropped the separate `tasks` parameter — it's now expected to pull tasks from `pet.get_tasks()`, removing the two-sources-of-truth risk.
+* Added `from __future__ import annotations` to support the forward references (`Owner.pets: list[Pet]`, `Task.pet: Pet`) without reordering classes.
+
+  **FINAL DESIGN:**
+
+
+
+Class Name: Owner
+
+1. Attributes:
+
+- ownerName: String
+- availableMinutes: Integer
+- preferences: Dictionary
+- pets: List of Pet objects
+
+2. Methods:
+
+- register()
+- setAvailableMinutes(minutes: int)
+- addPreference(key: String, value: String)
+- addPet(pet: Pet)
+- getPets(): List<Pet></pet>
+
+Class Name: Pet
+
+1. Attributes:
+
+- petId: String
+- name: String
+- species: String
+- healthCondition: HealthCondition
+
+2. Methods:
+
+- addTask(task: Task)
+- removeTask(taskId: String)
+- getTasks(): List<Task></task>
+
+Class Name: Task
+
+1. Attributes:
+
+- taskId: String
+- name: String
+- taskType: TaskType
+- durationMinutes: Integer
+- priority: Priority
+- preferredTime: String
+- recurring: Boolean
+- pet: Pet
+
+2. Methods:
+
+- markDone()
+- updatePriority(priority: Priority)
+
+Class Name: DailyPlan
+
+1. Attributes:
+
+- planId: String
+- planDate: Date
+- pet: Pet
+- owner: Owner
+- scheduledTasks: List of Task objects
+- skippedTasks: List of Task objects
+- reasoning: Dictionary with String keys and String values
+
+2. Methods:
+
+- generate(pet: Pet, owner: Owner)
+- sortByPriority(tasks: List<Task></task>): List<Task></task>
+- fitsInTime(task: Task, remainingMinutes: int): Boolean
+- addTask(task: Task, reason: String)
+- skipTask(task: Task, reason: String)
+- getTotalMinutes(): Integer
+- explain(): String
+
+Class Name: HealthCondition (Enumeration)
+
+1. Attributes:
+
+- HEALTHY
+- SICK
+- RECOVERING
+- SENIOR
+
+2. Methods:
+
+- None
+
+Class Name: TaskType (Enumeration)
+
+1. Attributes:
+
+- WALK
+- FEEDING
+- MEDICATION
+- ENRICHMENT
+- GROOMING
+- OTHER
+
+2. Methods:
+
+- None
+
+Class Name: Priority (Enumeration)
+
+1. Attributes:
+
+- LOW
+- MEDIUM
+- HIGH
+
+2. Methods:
+
+- None
+
+Class Relationships
+
+- Owner → Pet: One owner owns one or more pets.
+- Pet → Task: One pet can have multiple tasks.
+- DailyPlan → Owner: Each daily plan is associated with exactly one owner.
+- DailyPlan → Pet: Each daily plan is created for exactly one pet.
+- DailyPlan → Task: A daily plan contains zero or more tasks through composition.
+- Pet → HealthCondition: A pet has a health condition.
+- Task → TaskType: Each task has a task type.
+- Task → Priority: Each task has a priority.
+
 ---
 
 ## 2. Scheduling Logic and Tradeoffs

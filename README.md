@@ -22,6 +22,20 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Implementation Summary
+
+PawPal+'s domain model lives in `pawpal_system.py` and is exercised by the demo script in `main.py`. The classes work together like this:
+
+- **`Owner`** holds the pet owner's name, available minutes for the day, free-form preferences, and the list of `Pet` objects they're responsible for (`add_pet`, `get_pets`).
+- **`Pet`** belongs to an `Owner` and keeps its own list of `Task` objects (`add_task`, `remove_task`, `get_tasks`). Adding a task sets a back-reference from the task to its pet.
+- **`Task`** is a single care item (walk, feeding, medication, etc.) with a duration, `Priority`, optional preferred time, and a `done` flag toggled by `mark_done()`.
+- **`DailyPlan`** ties everything together: `generate(pet, owner)` sorts a pet's tasks by priority (`_sort_by_priority`), then greedily schedules each task if it fits in the owner's remaining minutes (`_fits_in_time`), recording a reason for every decision via `add_task`/`skip_task`. `get_total_minutes()` and `explain()` then report the resulting schedule and the reasoning behind it in plain language.
+- `HealthCondition`, `TaskType`, and `Priority` are enums that constrain the valid values for pet health, task category, and task importance.
+
+In short: an `Owner` has `Pet`s, each `Pet` has `Task`s, and a `DailyPlan` consumes a pet's tasks plus the owner's available time to produce a prioritized, explainable schedule. `main.py` demonstrates this end-to-end by building an owner, two pets, and a few tasks, then printing a simple sorted schedule. Unit tests in `tests/test_pawpal.py` cover the core `Task`/`Pet` behaviors (`mark_done`, `add_task`).
+
+Scheduling logic currently uses a simple priority-first greedy algorithm; the Streamlit UI and more advanced conflict/recurrence handling are not yet implemented (see the "Smarter Scheduling" section below for what's planned).
+
 ## Getting started
 
 ### Setup
@@ -42,53 +56,54 @@ pip install -r requirements.txt
 6. Connect your logic to the Streamlit UI in `app.py`.
 7. Refine UML so it matches what you actually built.
 
+> **Current status:** Steps 1-5 are done — see [Implementation Summary](#implementation-summary) above. `main.py` is a CLI demo of the domain model; the Streamlit UI (step 6) is still to come.
+
 ## 🖥️ Sample Output
 
-Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
+Output of `python main.py`:
 
 ```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
+Today's Schedule
+=================
+07:00  Rex         Morning Walk (30 min, priority: HIGH)
+08:00  Rex         Feeding (15 min, priority: HIGH)
+18:30  Whiskers    Medication (10 min, priority: MEDIUM)
 ```
 
 ## 🧪 Testing PawPal+
 
+sample test output:
+
 ```bash
-# Run the full test suite:
-pytest
+====================================== test session starts =======================================
+platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.7.0
+rootdir: /Users/jeanmariengabonziza/CodePath/ai110-module2show-pawpal-starter
+collected 2 items                                                                            
 
-# Run with coverage:
-pytest --cov
-```
+tests/test_pawpal.py ..                                                                    [100%]
 
-Sample test output:
-
-```
-# Paste your pytest output here
+======================================= 2 passed in 0.01s ========================================
 ```
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
-
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Feature           | Method(s)                                           | Notes                                                                     |
+| ----------------- | --------------------------------------------------- | ------------------------------------------------------------------------- |
+| Task sorting      | `DailyPlan._sort_by_priority`                     | Orders a pet's tasks HIGH → MEDIUM → LOW before scheduling              |
+| Filtering         | `DailyPlan._fits_in_time`, `DailyPlan.generate` | Greedily schedules tasks while time remains; skips the rest with a reason |
+| Conflict handling | *(not yet implemented)*                           | `Task.preferred_time` exists but overlapping time slots aren't detected |
+| Recurring tasks   | *(not yet implemented)*                           | `Task.recurring` flag exists but isn't used by the scheduler yet        |
 
 ## 📸 Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+Running `python main.py` does the following:
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+1. Creates an `Owner` ("Jean Marie") with 120 available minutes.
+2. Creates two `Pet`s — Rex (a healthy dog) and Whiskers (a senior cat) — and adds them to the owner.
+3. Creates three `Task`s (Morning Walk, Feeding, Medication) with durations, priorities, and preferred times, and assigns them to the appropriate pet.
+4. Collects all tasks across the owner's pets and sorts them by preferred time.
+5. Prints the resulting schedule to the console (see [Sample Output](#-sample-output) above).
 
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+A Streamlit UI that lets a user interactively manage owners/pets/tasks and view a `DailyPlan`'s generated schedule is planned but not yet built.
+
+**Screenshot or video** *(optional)*:

@@ -1,0 +1,107 @@
+classDiagram
+    class Owner {
+        -String ownerName
+        -int availableMinutes
+        -Dict preferences
+        -Dict~Priority, String~ priorityReasons
+        -List~Pet~ pets
+        +register()
+        +setAvailableMinutes(minutes: int)
+        +addPreference(key: String, value: String)
+        +setPriorityReason(priority: Priority, reason: String)
+        +getPriorityReason(priority: Priority) String
+        +addPet(pet: Pet)
+        +getPets() List~Pet~
+    }
+
+    class Pet {
+        -String petId
+        -String name
+        -String species
+        -HealthCondition healthCondition
+        -List~Task~ tasks
+        +addTask(task: Task)
+        +removeTask(taskId: String)
+        +getTasks() List~Task~
+        +getTasksByStatus(done: boolean) List~Task~
+    }
+
+    class Task {
+        -String taskId
+        -String name
+        -TaskType taskType
+        -int durationMinutes
+        -Priority priority
+        -String? preferredTime
+        -RecurrenceInterval recurrence
+        -Date? dueDate
+        -boolean done
+        -Pet? pet
+        +markDone()
+        -nextOccurrence() Task
+        +updatePriority(priority: Priority)
+    }
+
+    class DailyPlan {
+        -String planId
+        -Date? planDate
+        -Pet? pet
+        -Owner? owner
+        -List~Task~ scheduledTasks
+        -List~Task~ skippedTasks
+        -Dict~String, String~ reasoning
+        -List~String~ conflicts
+        +generate(pet: Pet, owner: Owner)
+        +detectConflicts(tasks: List~Task~) List~String~
+        -sortByPriority(tasks: List~Task~) List~Task~
+        -fitsInTime(task: Task, remainingMinutes: int) boolean
+        +addTask(task: Task, reason: String)
+        +skipTask(task: Task, reason: String)
+        +getTotalMinutes() int
+        +explain() String
+    }
+
+    class HealthCondition {
+        <<enumeration>>
+        HEALTHY
+        SICK
+        RECOVERING
+        SENIOR
+    }
+
+    class TaskType {
+        <<enumeration>>
+        WALK
+        FEEDING
+        MEDICATION
+        ENRICHMENT
+        GROOMING
+        OTHER
+    }
+
+    class Priority {
+        <<enumeration>>
+        LOW
+        MEDIUM
+        HIGH
+    }
+
+    class RecurrenceInterval {
+        <<enumeration>>
+        NONE
+        DAILY
+        WEEKLY
+        +days int
+    }
+
+    Owner "1" -- "1..*" Pet : owns
+    Pet "1" -- "*" Task : has
+    DailyPlan "1" --> "1" Owner : for
+    DailyPlan "1" --> "1" Pet : for
+    DailyPlan "1" *-- "0..*" Task : includes (scheduled)
+    DailyPlan "1" *-- "0..*" Task : skips
+    Pet ..> HealthCondition : uses
+    Task ..> TaskType : uses
+    Task ..> Priority : uses
+    Task ..> RecurrenceInterval : uses
+    Owner ..> Priority : uses

@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from pawpal_system_1 import (
+from pawpal_system import (
     DailyPlan,
     HealthCondition,
     Owner,

@@ -247,17 +247,22 @@ Class Relationships
 **a. Constraints and priorities**
 
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
+
+--> priority
+
 - How did you decide which constraints mattered most?
+
+--> i imagined myself as a pet owner and realized that if something was ranked high on priority that would be the task i want to handle first. 
 
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
 
---> I had to choose between sorting with time or priority. I decided to go with priority. 
+--> I had to choose between sorting with time or priority. I decided to go with priority.
 
 - Why is that tradeoff reasonable for this scenario?
 
---> If a task if high priority regardless of the time it takes it needs to be done as soon as possible. So putting high priority tasks first made sense. 
+--> If a task if high priority regardless of the time it takes it needs to be done as soon as possible. So putting high priority tasks first made sense.
 
 ---
 
@@ -294,12 +299,24 @@ Class Relationships
 **a. What you tested**
 
 - What behaviors did you test?
+
+--> tested if conflicts is caught 
+
+--> tested if sorting works efficiently
+
 - Why were these tests important?
+
+--> i think these were the core features of the app. The app is to make a pet owner's life easy to manage and this was the way to do it. 
 
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
+
+--> I tested the app multiple times with different data and it worked well. 
+
 - What edge cases would you test next if you had more time?
+
+--> making sure that if two different pets have conflicting time, then we display both names
 
 ---
 
@@ -309,10 +326,20 @@ Class Relationships
 
 - What part of this project are you most satisfied with?
 
+--> the priority scheduling went well
+
+--> adding multiple pets was also satisfying. 
+
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
 
+--> I would be more specific with how i add in the time since now it is just a string. I would make it more efficient and add in am/pm selection. 
+
+--> making sure that even if a task is high priority if it happens later in the day then i ask the owner if that's okay since i can't change the time it needs to happen at. 
+
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+
+--> Be patient with yourself and keep iterating on the project. A project is not done in one passing. There is always something that can be done better.

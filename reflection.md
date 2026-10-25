@@ -43,7 +43,7 @@ class heath:
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
---> after consulting with claude, I realized that there were so many functionalities my initial design didn't have. We did a heavy lifting in the task and daily plan classes since I had not thought about the constraints like time and priority. 
+--> after consulting with claude, I realized that there were so many functionalities my initial design didn't have. We did a heavy lifting in the task and daily plan classes since I had not thought about the constraints like time and priority.
 
 **This is the new design:**
 
@@ -101,7 +101,7 @@ Class Name: DailyPlan
 - planDate: Date
 - scheduledTasks: List
 
-**Changes in the design:** 
+**Changes in the design:**
 
 After asking claude to look through the skeleton for implementation we might have missed this is what we fixed:
 
@@ -114,8 +114,6 @@ After asking claude to look through the skeleton for implementation we might hav
 * Added `from __future__ import annotations` to support the forward references (`Owner.pets: list[Pet]`, `Task.pet: Pet`) without reordering classes.
 
   **FINAL DESIGN:**
-
-
 
 Class Name: Owner
 
@@ -254,7 +252,12 @@ Class Relationships
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
+
+--> I had to choose between sorting with time or priority. I decided to go with priority. 
+
 - Why is that tradeoff reasonable for this scenario?
+
+--> If a task if high priority regardless of the time it takes it needs to be done as soon as possible. So putting high priority tasks first made sense. 
 
 ---
 
@@ -264,26 +267,25 @@ Class Relationships
 
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
 
---> I used ai to brainstorm a better design for the app and to generate a scafolding skeleton for the methods I needed. 
+--> I used ai to brainstorm a better design for the app and to generate a scafolding skeleton for the methods I needed.
 
 - What kinds of prompts or questions were most helpful?
 
 --> I found it helpful to ask the ai agent questions that start with "Role: software developer" this way ai tends to not give you all the solutions at once and it tries to optmize the results it gives you.
 
---> AI is really good at explaing logics and how the whole design ties together. As an early developer I still struggle to see the big picture and ai helps with that. 
+--> AI is really good at explaing logics and how the whole design ties together. As an early developer I still struggle to see the big picture and ai helps with that.
 
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
 
---> When I asked AI to generate the UML/skeleton code I realized that some relations were not tied into the design. For instance, the owner had no way of adding pets, tasks weren't directly linked to the pet they refer to. 
+--> When I asked AI to generate the UML/skeleton code I realized that some relations were not tied into the design. For instance, the owner had no way of adding pets, tasks weren't directly linked to the pet they refer to.
 
 - How did you evaluate or verify what the AI suggested?
 
 --> After realizing this, I asked claude questions about these relations like " how would an owner add pets, can an owner have multiple pets, how will i know which task belong to which pet" this helped ai realize these were missing and went back to implement them and revise the uml diagram.
 
-
-**NB:** One key takeaway is not to work in the same chat for a lot of prompts. AI starts to hallucinate especially when the tasks are not directly linked. 
+**NB:** One key takeaway is not to work in the same chat for a lot of prompts. AI starts to hallucinate especially when the tasks are not directly linked.
 
 ---
 

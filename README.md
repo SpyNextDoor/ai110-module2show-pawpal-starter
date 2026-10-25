@@ -87,12 +87,14 @@ tests/test_pawpal.py ..                                                         
 
 ## 📐 Smarter Scheduling
 
-| Feature           | Method(s)                                           | Notes                                                                     |
-| ----------------- | --------------------------------------------------- | ------------------------------------------------------------------------- |
-| Task sorting      | `DailyPlan._sort_by_priority`                     | Orders a pet's tasks HIGH → MEDIUM → LOW before scheduling              |
-| Filtering         | `DailyPlan._fits_in_time`, `DailyPlan.generate` | Greedily schedules tasks while time remains; skips the rest with a reason |
-| Conflict handling | *(not yet implemented)*                           | `Task.preferred_time` exists but overlapping time slots aren't detected |
-| Recurring tasks   | *(not yet implemented)*                           | `Task.recurring` flag exists but isn't used by the scheduler yet        |
+The behaviors below live in `pawpal_system_1.py` (wired up to the UI in `app_1.py`), which extends the base domain model in `pawpal_system.py` with priority-aware filtering, conflict detection, and recurrence.
+
+| Feature            | Method(s)                                               | Notes                                                                                                                                             |
+| ------------------ | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sorting behavior   | `DailyPlan._sort_by_priority`                           | Maps each `Priority` to a rank (HIGH=0 … LOW=2) and runs a stable sort over a pet's tasks, so same-priority tasks keep their original order before scheduling. |
+| Filtering behavior | `Pet.get_tasks_by_status`, `DailyPlan._fits_in_time`    | `get_tasks_by_status(done)` filters a pet's tasks by completion state in one O(n) pass. During scheduling, `_fits_in_time` filters which sorted tasks are greedily accepted into `scheduled_tasks` vs. `skipped_tasks` based on the owner's remaining minutes. |
+| Conflict detection | `DailyPlan.detect_conflicts`                            | After scheduling, groups the scheduled tasks by `preferred_time` in a single O(n) pass and emits a warning string for any time slot with more than one task — surfaced via `DailyPlan.explain()`. |
+| Recurring tasks    | `Task.mark_done`, `Task._next_occurrence`, `RecurrenceInterval` | `mark_done()` checks the task's `RecurrenceInterval` (`DAILY`/`WEEKLY`); if it recurs, it calls `_next_occurrence()` to build and attach the next `Task` instance, with `due_date` advanced by `RecurrenceInterval.days`. |
 
 ## 📸 Demo Walkthrough
 
